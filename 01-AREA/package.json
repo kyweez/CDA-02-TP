@@ -1,0 +1,18 @@
+{
+  "name": "01-area",
+  "version": "0.0.1",
+  "description": "TP Area made in CDA training",
+  "main": "main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kyweez/CDA-02-TP/tree/master/01-AREA"
+  },
+  "author": "kyweez",
+  "license": "UNLICENSED"
+}
