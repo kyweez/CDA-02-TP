@@ -10,23 +10,23 @@ CONSIGNES :
    * rabbit(Point _point)  : Les coordonnées de l'instance actuelle et du "Point" fourni en argument sont échangées
 
 RESTRICTIONS :
-* Le corps de la méthode "rabbit" ne peut contenir que 3 instructions au maximum et ne doit pas impliquer la création d'autres fonctions !
-*Le petit programme qui suit la classe doit fonctionner en l'état (non modifié)
+  Le corps de la méthode "rabbit" ne peut contenir que 3 instructions au maximum et ne doit pas impliquer la création d'autres fonctions !
+
 
 ## Héritage de "Point"
 Nous avons besoin de représenter plusieurs types de Point :
-* Un mur (Wall) possédant
+1. Un mur (Wall) possédant
     * un attribut supplémentaire avec accesseur et sans mutateur
-        * material : string
-* Une porte (Door) possédant
+      * material : string
+2. Une porte (Door) possédant
     * un attribut supplémentaire avec accesseur et sans mutateur
         * isOpen : bool
     * une méthode supplémentaire
         * openClose() : bool
-* Un chemin (Path) possédant
+3. Un chemin (Path) possédant
     * 2 attributs supplémentaires avec accesseur et mutateur
         * player : bool
         * nbPassages : int
-* Une arrivée (Goal) possédant
+4. Une arrivée (Goal) possédant
     * 1 attribut supplémentaire avec accesseur et sans mutateur
         * success : bool
