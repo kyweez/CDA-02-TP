@@ -4,6 +4,7 @@
   "description": "TP Area made in CDA training",
   "main": "main.js",
   "directories": {
+    "start": "node main.js",
     "test": "test"
   },
   "scripts": {
