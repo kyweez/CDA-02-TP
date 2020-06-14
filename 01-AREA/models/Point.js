@@ -1,13 +1,18 @@
-/**
- * La classe "Point" représente les coordonnées d'un point dans une zone à 2 dimensions
- */
 class Point {
+
+    //####################################################################################//
+    //#################################### ATTRIBUTES ####################################//
+    //####################################################################################//
 
     /** @var int x Abscisse */
     #x;
 
     /** @var int y Ordonnée */
     #y;
+
+    //####################################################################################//
+    //#################################### CONSTRUCTOR ###################################//
+    //####################################################################################//
 
     /**
      * Constructeur: Initialise une nouvelle instance de la classe "Point"
@@ -19,13 +24,9 @@ class Point {
         this.setY(_y || 0);
     }
 
-    /**
-     * Retourne une représentation textuelle du Point
-     * @return string Les coordonnées du Point
-     */
-    toString() {
-        return (`(${this.#x},${this.#y})`);
-    }
+    //####################################################################################//
+    //################################# GETTERS / SETTERS ################################//
+    //####################################################################################//
 
     /**
      * Retourne la valeur de X
@@ -44,7 +45,7 @@ class Point {
     }
 
     /**
-     * Définit une nouvell valeur pour X
+     * Définit une nouvelle valeur pour X
      * @param int _newX nouvelle valeur pour X 
      */
     setX(_newX) {
@@ -53,12 +54,24 @@ class Point {
     }
 
     /**
-     * Définit une nouvell valeur pour Y
+     * Définit une nouvelle valeur pour Y
      * @param int _newY nouvelle valeur pour Y
      */
     setY(_newY) {
         _newY = parseInt(_newY || 0);
         this.#y = isFinite(_newY) ? _newY : 0;
+    }
+
+    //####################################################################################//
+    //##################################### FUNCTIONS ####################################//
+    //####################################################################################//
+
+    /**
+     * Retourne une représentation textuelle du Point
+     * @return string Les coordonnées du Point
+     */
+    toString() {
+        return (`(${this.#x},${this.#y})`);
     }
 
     /**
