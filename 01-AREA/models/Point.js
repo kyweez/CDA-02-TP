@@ -10,6 +10,9 @@ class Point {
     /** @var int y Ordonnée */
     #y;
 
+    /** @var int index (sert dans la grille) */
+    #index;
+
     //####################################################################################//
     //#################################### CONSTRUCTOR ###################################//
     //####################################################################################//
@@ -22,6 +25,7 @@ class Point {
     constructor(_x, _y) {
         this.setX(_x || 0);
         this.setY(_y || 0);
+        this.setIndex(0);
     }
 
     //####################################################################################//
@@ -45,6 +49,14 @@ class Point {
     }
 
     /**
+      * Retourne la valeur de Index
+     * @returns int Index
+     */
+    getIndex() {
+        return this.#index;
+    }
+
+    /**
      * Définit une nouvelle valeur pour X
      * @param int _newX nouvelle valeur pour X 
      */
@@ -60,6 +72,15 @@ class Point {
     setY(_newY) {
         _newY = parseInt(_newY || 0);
         this.#y = isFinite(_newY) ? _newY : 0;
+    }
+
+    /**
+     * Définit une nouvelle valeur pour index
+     * @param int _newIndex nouvelle valeur pour index
+     */
+    setIndex(_newIndex) {
+        _newIndex = parseInt(_newIndex || 0);
+        this.#index = isFinite(_newIndex) ? _newIndex : 0;
     }
 
     //####################################################################################//
@@ -80,6 +101,9 @@ class Point {
      * @param int _y Nouvelle valeur pour Y
      */
     move(_x, _y) {
+        /**
+         * @todo : Mettre cette fonction en prive car peut poser des problemes avec les index
+         */
         this.setX(_x || 0);
         this.setY(_y || 0);
     }
@@ -89,7 +113,9 @@ class Point {
      * @returns Point La nouvelle instance de Point créée
      */
     duplicate() {
-        return (new Point(this.#x, this.#y));
+        let newPoint = new Point(this.#x, this.#y);
+        newPoint.setIndex(this.#index);
+        return (newPoint);
     }
 
     /**
@@ -100,10 +126,11 @@ class Point {
     copy(_point) {
         if (!(_point instanceof Point))
             return (false);
-        if (!(isFinite(_point.#x) && isFinite(_point.#y)))
+        if (!(isFinite(_point.#x) && isFinite(_point.#y) && isFinite(_point.#index)))
             return (false);
         this.#x = _point.#x;
         this.#y = _point.#y;
+        this.#index = _point.#index;
         return (true);
     }
 
