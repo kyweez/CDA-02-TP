@@ -13,7 +13,7 @@ class Area {
     /** @var #height : Hauteur de la zone de jeu **/
     #height;
 
-    /** @var #area : Zone de jeu (tableau de points) **/
+    /** @var #area : Zone totale (tableau de points) **/
     #area;
 
     /** @var #areaSize : Nombre de cellule maximum de la zone de jeu **/
@@ -22,8 +22,8 @@ class Area {
     /** @var #freeCellTab : Coordonnees des cellules vides de la zone de jeu (tableau de points) **/
     #freeCellTab;
 
-    /** @var #outsideArea : Coordonnees des cellules en dehors de la zone de jeu (tableau de points) **/
-    #outsideArea;
+    /** @var #insideArea : Index des cellules allant de (1,0) a la fin (tableau boolean) true si la cellule est pleine **/
+    #insideArea;
 
     //####################################################################################//
     //#################################### CONSTRUCTOR ###################################//
@@ -41,7 +41,7 @@ class Area {
         this.setArea(new Array());
         this.setAreaSize();
         this.setFreeCellTab();
-        this.setOusideArea();
+        this.setInsideArea();
     }
 
     //####################################################################################//
@@ -79,10 +79,10 @@ class Area {
     getFreeCellTab() { return (this.#freeCellTab); }
 
     /**
-     * Retourne le tableau outsideArea
-     * @returns Point[] outsideArea
+     * Retourne le tableau insideArea
+     * @returns Point[] insideArea
      */
-    getOutsideArea() { return (this.#outsideArea); }
+    getInsideArea() { return (this.#insideArea); }
 
 
     /**
@@ -105,6 +105,7 @@ class Area {
 
     /**
      * Définit le nouveau tableau this.#area et place le point d'oirigine
+     * Nous definissons l'index de l'origine a -1 pour le differencier des index des tableaux annexes de calcul 
      * @param Point[] _table
      */
     setArea(_table) {
@@ -112,6 +113,7 @@ class Area {
             this.#area = new Array();
         this.#area = _table;
         this.#area[0] = new Point(0, 0);
+        this.#area[0].setIndex(-1);
     }
 
     /**
@@ -130,13 +132,14 @@ class Area {
         let freeCells = [];
         let bfs = new Bfs(this);
         let node;
+        let index = 0;
         while (bfs.getQueue().length > 0) {
             node = bfs.removeFromQueue();
-            if (this.isFreeCell(node))
+            if (this.isFreeCell(node)) {
+                node.setIndex(index++);
                 freeCells.push(node);
+            }
             if (node.getX() + 1 < this.#width && node.getY() + 1 < this.#height) {
-                console.log(`NODE : ${node.toString()}`);
-                console.log(`QUEUE : ${bfs.getQueue()}`);
                 if (!bfs.getVisited()[node.getY()][node.getX() + 1]) {
                     bfs.insertInQueue(new Point(node.getX() + 1, node.getY()));
                     bfs.getVisited()[node.getY()][node.getX() + 1] = (true);
@@ -149,19 +152,24 @@ class Area {
         }
         let finaleNode = node.duplicate();
         finaleNode.setX(finaleNode.getX() + 1);
+        finaleNode.setIndex(finaleNode.getIndex() + 1);
         if (this.isFreeCell(finaleNode))
             freeCells.push(finaleNode);
         this.#freeCellTab = freeCells;
     }
 
     /**
-     * Définit le nouveau tableau this.#outsideArea (tableau vide initialement)
+     * Définit le nouveau tableau this.#insideArea (tableau vide initialement)
      * @param Point[] _table
      */
-    setOutsideArea(_table) {
-        if (!Array.isArray(_table))
-            this.#outsideArea = new Array();
-        this.#outsideArea = _table;
+    setInsideArea() {
+        this.#insideArea = new Array(this.#freeCellTab.length);
+        /**
+         * @todo : Pourquoi je n'y arrive pas avec un foreach ?
+         */
+        let i;
+        for (i = 0; i < this.#insideArea.length; i++)
+            this.#insideArea[i] = (false);
     }
 
     //####################################################################################//
@@ -170,7 +178,7 @@ class Area {
 
 
     /**
-     * Cette fonction verifie si le point passe en argument est une cellule vide de l'aire de jeu
+     * Cette fonction verifie si le point passe en argument est une cellule vide de l'aire
      * Si la cellule est vide retourne true, sinon retourne false
      * @param Point _point
      * @returns boolean true/false
@@ -183,18 +191,110 @@ class Area {
         return (true);
     }
 
+    /**
+     * Ajoute un point dans l'aire
+     * Le point peut etre en dehors de la zone
+     * @param Point _point 
+     * @returns Boolean true/false 
+     */
+    addPoint(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if (this.#area.length >= this.tabSize)
+            return (false);
+        if (!this.isFreeCell(_point)) {
+            _point.copy(this.#freeCellTab[0]);
+            this.updateFreeCellTab(_point);
+            this.#insideArea[_point.getIndex()] = (true);
+        }
+        else if (this.isInside(_point)) {
+            _point.setIndex(this.realIndex(_point));
+            this.updateFreeCellTab(_point);
+            this.#insideArea[_point.getIndex()] = (true);
+        }
+        this.#area.push(_point);
+        this.#areaSize++;
+        return true;
+    }
+
+    /**
+     * Cette fonction met a jour this.#freeCellTab en supprimant le point passe en parametre
+     * @param Point _point
+     * @returns Boolean true/false (true en cas de succes)
+     */
+    updateFreeCellTab(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
+        if (index === -1)
+            return (false);
+        this.#freeCellTab.splice(index, 1);
+        return (true);
+    }
+
+    /**
+     * Cette fonction verifie en fonction de ses coordonnees si le point est dans la zone de jeu
+     * @param Point _point
+     * @returns boolean true/false
+     */
+    isInside(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        /**
+         * @todo : Comment differencier un vrai false d'un false a cause d'un objet corrompu ?
+         */
+        if (_point.getX() < 0 || _point.getY() < 0)
+            return (false);
+        if (_point.getX() >= this.#width || _point.getY() >= this.#height)
+            return (false);
+        return (true);
+
+    }
+
+    realIndex(_point) {
+        if (!(_point instanceof Point))
+            return (NaN);
+        let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
+        if (index === -1)
+            return (NaN);
+        return (this.#freeCellTab[index].getIndex());
+    }
+
 }
 
 module.exports = Area;
 
 let area = new Area(3, 3);
-console.log(area);
-console.log(area.getWidth());
-console.log(area.getHeight());
-console.log(area.getAreaSize());
-console.log(area.getArea());
-console.log(area.getArea()[0].toString());
-console.log(area.getFreeCellTab());
+let point1 = new Point(0, 0);
+let point2 = new Point(0, 0);
+let point3 = new Point(2,2);
+let point4 = new Point(3,3);
+let point5 = new Point(-1,-1);
+area.addPoint(point1);
+area.addPoint(point2);
+area.addPoint(point3);
+area.addPoint(point4);
+area.addPoint(point5);
+
+// console.log(area);
+// console.log(area.getWidth());
+// console.log(area.getHeight());
+// console.log(area.getAreaSize());
+// console.log(area.getArea());
+// console.log(area.getArea()[0].toString());
+// console.log(area.getFreeCellTab());
+area.getArea().forEach(element => {
+    console.log(element.toString());
+    console.log(element.getIndex());
+});
+console.log(`#########`)
 area.getFreeCellTab().forEach(element => {
     console.log(element.toString());
+    console.log(element.getIndex());
 });
+// console.log('#########');
+// console.log(area.getInsideArea());
+// let i = 0;
+// for (i; i< area.getInsideArea().length; i++){
+//     console.log(area.getInsideArea()[i]);
+// }
