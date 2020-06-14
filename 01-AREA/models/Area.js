@@ -105,7 +105,7 @@ class Area {
 
     /**
      * Définit le nouveau tableau this.#area et place le point d'oirigine
-     * Nous definissons l'index de l'origine a -1 pour le differencier des index des tableaux annexes de calcul 
+     * Nous definissons l'index de l'origine a 0. Attention aux autres tableaux qui debutent sans compter l'origine...
      * @param Point[] _table
      */
     setArea(_table) {
@@ -113,7 +113,7 @@ class Area {
             this.#area = new Array();
         this.#area = _table;
         this.#area[0] = new Point(0, 0);
-        this.#area[0].setIndex(-1);
+        this.#area[0].setIndex(0);
     }
 
     /**
@@ -194,6 +194,8 @@ class Area {
     /**
      * Ajoute un point dans l'aire
      * Le point peut etre en dehors de la zone
+     * Les index sont reatribues (2 index 0 car origine dispose d'un index 0 egalement)
+     * On ne decale pas l'indexage des points pour garder la coherence avec les tableaux annexes.
      * @param Point _point 
      * @returns Boolean true/false 
      */
@@ -212,6 +214,8 @@ class Area {
             this.updateFreeCellTab(_point);
             this.#insideArea[_point.getIndex()] = (true);
         }
+        else
+            _point.setIndex(_point.distanceFromOrigin() * -1);
         this.#area.push(_point);
         this.#areaSize++;
         return true;
@@ -248,9 +252,27 @@ class Area {
         if (_point.getX() >= this.#width || _point.getY() >= this.#height)
             return (false);
         return (true);
-
     }
 
+    /**
+     * Cette fonction verifie si le point passe en argument se situe dans la zone.
+     * @param Point _point 
+     * @returns boolean true/false
+     */
+    isInArea(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        let index = this.#area.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
+        if (index === -1)
+            return (false);
+        return (true);
+    }
+
+    /**
+     * Cette fonction recherche l'index reel d'un point pour lui assigner sa place dans le tableau Area
+     * @param Point _point
+     * @returns int : NaN if failed / realIndex if success
+     */
     realIndex(_point) {
         if (!(_point instanceof Point))
             return (NaN);
@@ -260,6 +282,32 @@ class Area {
         return (this.#freeCellTab[index].getIndex());
     }
 
+    /**
+     * Déplace un point existant dans la zone vers de nouvelles coordonnées
+     * Les nouvelles coordonnées peuvent se trouver hors limites
+     * @returns Boolean true en cas de succès, false en cas d'échec
+     */
+    movePoint(_point, x, y) {
+        if (this.#area.length === this.#areaSize)
+            return (false);
+        if (!(_point instanceof Point))
+            return (false);
+        if (!(isFinite(x) && isFinite(y)))
+            return (false);
+        if (!this.isInArea(_point))
+            return (false);
+        if (_point === this.#area[0])
+            return (false);
+        // A FINIR : 
+        // cas outside -> outside
+        // cas outside -> inside freecell
+        // cas outside -> inside !freecell
+        // cas inside -> outside
+        // cas inside -> inside freecell
+        // cas inside -> inside !freecell
+    }
+
+
 }
 
 module.exports = Area;
@@ -267,9 +315,9 @@ module.exports = Area;
 let area = new Area(3, 3);
 let point1 = new Point(0, 0);
 let point2 = new Point(0, 0);
-let point3 = new Point(2,2);
-let point4 = new Point(3,3);
-let point5 = new Point(-1,-1);
+let point3 = new Point(2, 2);
+let point4 = new Point(3, 3);
+let point5 = new Point(-1, -1);
 area.addPoint(point1);
 area.addPoint(point2);
 area.addPoint(point3);
@@ -293,8 +341,8 @@ area.getFreeCellTab().forEach(element => {
     console.log(element.getIndex());
 });
 // console.log('#########');
-// console.log(area.getInsideArea());
-// let i = 0;
-// for (i; i< area.getInsideArea().length; i++){
-//     console.log(area.getInsideArea()[i]);
-// }
+console.log(area.getInsideArea());
+let i = 0;
+for (i; i < area.getInsideArea().length; i++) {
+    console.log(area.getInsideArea()[i]);
+}
