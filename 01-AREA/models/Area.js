@@ -150,11 +150,11 @@ class Area {
                 }
             }
         }
-        let finaleNode = node.duplicate();
-        finaleNode.setX(finaleNode.getX() + 1);
-        finaleNode.setIndex(finaleNode.getIndex() + 1);
-        if (this.isFreeCell(finaleNode))
-            freeCells.push(finaleNode);
+        let finalNode = node.duplicate();
+        finalNode.setX(finalNode.getX() + 1);
+        finalNode.setIndex(finalNode.getIndex() + 1);
+        if (this.isFreeCell(finalNode))
+            freeCells.push(finalNode);
         this.#freeCellTab = freeCells;
     }
 
@@ -164,9 +164,7 @@ class Area {
      */
     setInsideArea() {
         this.#insideArea = new Array(this.#freeCellTab.length);
-        /**
-         * @todo : Pourquoi je n'y arrive pas avec un foreach ?
-         */
+
         let i;
         for (i = 0; i < this.#insideArea.length; i++)
             this.#insideArea[i] = (false);
@@ -242,11 +240,6 @@ class Area {
      * @returns boolean true/false
      */
     isInside(_point) {
-        if (!(_point instanceof Point))
-            return (false);
-        /**
-         * @todo : Comment differencier un vrai false d'un false a cause d'un objet corrompu ?
-         */
         if (_point.getX() < 0 || _point.getY() < 0)
             return (false);
         if (_point.getX() >= this.#width || _point.getY() >= this.#height)
@@ -287,24 +280,42 @@ class Area {
      * Les nouvelles coordonnées peuvent se trouver hors limites
      * @returns Boolean true en cas de succès, false en cas d'échec
      */
-    movePoint(_point, x, y) {
+    movePoint(_point, _x, _y) {
         if (this.#area.length === this.#areaSize)
             return (false);
         if (!(_point instanceof Point))
             return (false);
-        if (!(isFinite(x) && isFinite(y)))
+        if (_x === null || _y === null)
+            return (false);
+        if (!(isFinite(_x) && isFinite(_y)))
             return (false);
         if (!this.isInArea(_point))
             return (false);
         if (_point === this.#area[0])
             return (false);
-        // A FINIR : 
-        // cas outside -> outside
-        // cas outside -> inside freecell
-        // cas outside -> inside !freecell
-        // cas inside -> outside
-        // cas inside -> inside freecell
-        // cas inside -> inside !freecell
+        let temp = new Point(_x, _y);
+        if (this.isInside(_point) && this.isInside(temp))
+            return (this.moveInsideToInside(_point, temp));
+        else if (this.isInside(_point) && !this.isInside(temp))
+            return (this.moveInsideToOutside(_point, temp));
+        else if (!this.isInside(_point) && this.isInside(temp))
+            return (this.moveOutsideToInside(_point, temp));
+        else
+            return (this.moveOutsideToOuside(_point, temp));
+    }
+
+    moveInsideToInside(_point, _temp) {
+        if (!(_point instanceof Point) || !(_point instanceof Point))
+            return (false);
+        let index = _point.getIndex();
+        this.#area.splice((index+1), 1); //+1 car on commence l'indexation apres Origine
+        this.#freeCellTab.splice(index, 0, _point.duplicate());
+        _temp.setIndex(this.realIndex(_temp));
+        _point.copy(_temp);
+        let newIndex = _point.getIndex();
+        this.#area.splice((newIndex+1), 0, _point);
+        this.updateFreeCellTab(_point);
+        return (true);S
     }
 
 
@@ -312,17 +323,17 @@ class Area {
 
 module.exports = Area;
 
-let area = new Area(3, 3);
-let point1 = new Point(0, 0);
-let point2 = new Point(0, 0);
-let point3 = new Point(2, 2);
-let point4 = new Point(3, 3);
-let point5 = new Point(-1, -1);
+let area = new Area(2, 2);
+let point1 = new Point(0, 1);
+// let point2 = new Point(0, 0);
+// let point3 = new Point(2, 2);
+// let point4 = new Point(3, 3);
+// let point5 = new Point(-1, -1);
 area.addPoint(point1);
-area.addPoint(point2);
-area.addPoint(point3);
-area.addPoint(point4);
-area.addPoint(point5);
+// area.addPoint(point2);
+// area.addPoint(point3);
+// area.addPoint(point4);
+// area.addPoint(point5);
 
 // console.log(area);
 // console.log(area.getWidth());
@@ -340,9 +351,24 @@ area.getFreeCellTab().forEach(element => {
     console.log(element.toString());
     console.log(element.getIndex());
 });
-// console.log('#########');
-console.log(area.getInsideArea());
+console.log('#########');
 let i = 0;
+for (i; i < area.getInsideArea().length; i++) {
+    console.log(area.getInsideArea()[i]);
+}
+area.movePoint(point1, 1, 1);
+console.log(`MOVE POINT #########`)
+area.getArea().forEach(element => {
+    console.log(element.toString());
+    console.log(element.getIndex());
+});
+console.log(`#########`)
+area.getFreeCellTab().forEach(element => {
+    console.log(element.toString());
+    console.log(element.getIndex());
+});
+console.log('#########');
+i = 0;
 for (i; i < area.getInsideArea().length; i++) {
     console.log(area.getInsideArea()[i]);
 }
