@@ -215,8 +215,18 @@ class Area {
         else
             _point.setID(_point.distanceFromOrigin() * -1);
         this.#area.push(_point);
-        this.#areaSize++;
         return true;
+    }
+
+    updateInsideArea(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if (_point === this.#area[0])
+            return (false);
+        if (this.#insideArea[_point.getID()] === false)
+            this.#insideArea[_point.getID()] = true;
+        else
+            this.#insideArea[_point.getID()] = false;
     }
 
     /**
@@ -314,8 +324,11 @@ class Area {
     moveInsideToInside(_point, _temp) {
         if (!(_point instanceof Point) || !(_point instanceof Point))
             return (false);
+        _temp.setID(this.realID(_temp));
         this.updateFreeCellTab(_point);
+        this.updateInsideArea(_point);
         this.updateFreeCellTab(_temp);
+        this.updateInsideArea(_temp);
         // let id = _point.getID();
 
         // this.#area.splice((index + 1), 1); //+1 car on commence l'indexation apres Origine
