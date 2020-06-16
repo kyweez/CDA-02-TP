@@ -22,7 +22,7 @@ class Area {
     /** @var #freeCellTab : Coordonnees des cellules vides de la zone de jeu (tableau de points) **/
     #freeCellTab;
 
-    /** @var #insideArea : Index des cellules allant de (1,0) a la fin (tableau boolean) true si la cellule est pleine **/
+    /** @var #insideArea : Tableau des cellules allant de (1,0) a la fin (tableau boolean) true si la cellule est pleine **/
     #insideArea;
 
     //####################################################################################//
@@ -105,7 +105,7 @@ class Area {
 
     /**
      * Définit le nouveau tableau this.#area et place le point d'oirigine
-     * Nous definissons l'index de l'origine a 0. Attention aux autres tableaux qui debutent sans compter l'origine...
+     * Nous definissons l'ID de l'origine a 0. Attention aux autres tableaux qui debutent sans compter l'origine...
      * @param Point[] _table
      */
     setArea(_table) {
@@ -113,7 +113,7 @@ class Area {
             this.#area = new Array();
         this.#area = _table;
         this.#area[0] = new Point(0, 0);
-        this.#area[0].setIndex(0);
+        this.#area[0].setID(0);
     }
 
     /**
@@ -132,11 +132,11 @@ class Area {
         let freeCells = [];
         let bfs = new Bfs(this);
         let node;
-        let index = 0;
+        let id = 0;
         while (bfs.getQueue().length > 0) {
             node = bfs.removeFromQueue();
             if (this.isFreeCell(node)) {
-                node.setIndex(index++);
+                node.setID(id++);
                 freeCells.push(node);
             }
             if (node.getX() + 1 < this.#width && node.getY() + 1 < this.#height) {
@@ -152,7 +152,7 @@ class Area {
         }
         let finalNode = node.duplicate();
         finalNode.setX(finalNode.getX() + 1);
-        finalNode.setIndex(finalNode.getIndex() + 1);
+        finalNode.setID(finalNode.getID() + 1);
         if (this.isFreeCell(finalNode))
             freeCells.push(finalNode);
         this.#freeCellTab = freeCells;
@@ -192,8 +192,8 @@ class Area {
     /**
      * Ajoute un point dans l'aire
      * Le point peut etre en dehors de la zone
-     * Les index sont reatribues (2 index 0 car origine dispose d'un index 0 egalement)
-     * On ne decale pas l'indexage des points pour garder la coherence avec les tableaux annexes.
+     * Les ID sont reatribues (2 ID 0 car origine dispose d'un ID 0 egalement)
+     * On ne decale pas les ID des points pour garder la coherence avec les tableaux annexes.
      * @param Point _point 
      * @returns Boolean true/false 
      */
@@ -205,22 +205,23 @@ class Area {
         if (!this.isFreeCell(_point)) {
             _point.copy(this.#freeCellTab[0]);
             this.updateFreeCellTab(_point);
-            this.#insideArea[_point.getIndex()] = (true);
+            this.#insideArea[_point.getID()] = (true);
         }
         else if (this.isInside(_point)) {
-            _point.setIndex(this.realIndex(_point));
+            _point.setID(this.realID(_point));
             this.updateFreeCellTab(_point);
-            this.#insideArea[_point.getIndex()] = (true);
+            this.#insideArea[_point.getID()] = (true);
         }
         else
-            _point.setIndex(_point.distanceFromOrigin() * -1);
+            _point.setID(_point.distanceFromOrigin() * -1);
         this.#area.push(_point);
         this.#areaSize++;
         return true;
     }
 
     /**
-     * Cette fonction met a jour this.#freeCellTab en supprimant le point passe en parametre
+     * Cette fonction met a jour this.#freeCellTab en supprimant le point passe en parametre s'il existe 
+     * ou en l'ajoutant s'il n'existe pas. 
      * @param Point _point
      * @returns Boolean true/false (true en cas de succes)
      */
@@ -228,9 +229,15 @@ class Area {
         if (!(_point instanceof Point))
             return (false);
         let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
-        if (index === -1)
-            return (false);
-        this.#freeCellTab.splice(index, 1);
+        if (index === -1) {
+            if (!this.isInside(_point))
+                return (false);
+            this.#freeCellTab.push(_point);
+            this.#freeCellTab.sort((point1, point2) => point1.getID() - point2.getID());
+            return (true);
+        }
+        else
+            this.#freeCellTab.splice(index, 1);
         return (true);
     }
 
@@ -262,17 +269,17 @@ class Area {
     }
 
     /**
-     * Cette fonction recherche l'index reel d'un point pour lui assigner sa place dans le tableau Area
+     * Cette fonction recherche l'ID reel d'un point pour lui assigner sa place dans le tableau Area
      * @param Point _point
-     * @returns int : NaN if failed / realIndex if success
+     * @returns int : NaN if failed / realID if success
      */
-    realIndex(_point) {
+    realID(_point) {
         if (!(_point instanceof Point))
             return (NaN);
         let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
         if (index === -1)
             return (NaN);
-        return (this.#freeCellTab[index].getIndex());
+        return (this.#freeCellTab[index].getID());
     }
 
     /**
@@ -307,15 +314,20 @@ class Area {
     moveInsideToInside(_point, _temp) {
         if (!(_point instanceof Point) || !(_point instanceof Point))
             return (false);
-        let index = _point.getIndex();
-        this.#area.splice((index+1), 1); //+1 car on commence l'indexation apres Origine
-        this.#freeCellTab.splice(index, 0, _point.duplicate());
-        _temp.setIndex(this.realIndex(_temp));
-        _point.copy(_temp);
-        let newIndex = _point.getIndex();
-        this.#area.splice((newIndex+1), 0, _point);
         this.updateFreeCellTab(_point);
-        return (true);S
+        this.updateFreeCellTab(_temp);
+        // let id = _point.getID();
+
+        // this.#area.splice((index + 1), 1); //+1 car on commence l'indexation apres Origine
+
+        // this.#freeCellTab.splice(index, 0, _point.duplicate());
+        // _temp.setID(this.realID(_temp));
+        // _point.copy(_temp);
+        // let newIndex = _point.getID();
+        // this.#area.splice((newIndex + 1), 0, _point);
+
+        // this.updateFreeCellTab(_point);
+        return (true);
     }
 
 
@@ -324,51 +336,41 @@ class Area {
 module.exports = Area;
 
 let area = new Area(2, 2);
+console.log(`Affichage apres init : `);
+console.log(`----------------------`);
+print();
 let point1 = new Point(0, 1);
-// let point2 = new Point(0, 0);
-// let point3 = new Point(2, 2);
-// let point4 = new Point(3, 3);
-// let point5 = new Point(-1, -1);
 area.addPoint(point1);
-// area.addPoint(point2);
-// area.addPoint(point3);
-// area.addPoint(point4);
-// area.addPoint(point5);
-
-// console.log(area);
-// console.log(area.getWidth());
-// console.log(area.getHeight());
-// console.log(area.getAreaSize());
-// console.log(area.getArea());
-// console.log(area.getArea()[0].toString());
-// console.log(area.getFreeCellTab());
-area.getArea().forEach(element => {
-    console.log(element.toString());
-    console.log(element.getIndex());
-});
-console.log(`#########`)
-area.getFreeCellTab().forEach(element => {
-    console.log(element.toString());
-    console.log(element.getIndex());
-});
-console.log('#########');
-let i = 0;
-for (i; i < area.getInsideArea().length; i++) {
-    console.log(area.getInsideArea()[i]);
-}
+console.log(`Affichage apres add : `);
+console.log(`---------------------`);
+print();
 area.movePoint(point1, 1, 1);
-console.log(`MOVE POINT #########`)
-area.getArea().forEach(element => {
-    console.log(element.toString());
-    console.log(element.getIndex());
-});
-console.log(`#########`)
-area.getFreeCellTab().forEach(element => {
-    console.log(element.toString());
-    console.log(element.getIndex());
-});
-console.log('#########');
-i = 0;
-for (i; i < area.getInsideArea().length; i++) {
-    console.log(area.getInsideArea()[i]);
+console.log(`Affichage apres move : `);
+console.log(`----------------------`);
+print();
+
+
+function print() {
+    console.log(`width : ${area.getWidth()}`);
+    console.log(`width : ${area.getHeight()}`);
+    console.log(`areaSize : ${area.getAreaSize()}`);
+    console.log(`\x1b[31m\narea :`);
+    for (let i = 0; i < area.getArea().length; i++) {
+        console.log(`Index ${i} : ${area.getArea()[i].toString()} / id = ${area.getArea()[i].getID()}`);
+    }
+    console.log(`\x1b[35m\nfreeCellTab :`);
+    for (let i = 0; i < area.getFreeCellTab().length; i++) {
+        console.log(`Index ${i} : ${area.getFreeCellTab()[i].toString()} / id = ${area.getFreeCellTab()[i].getID()}`);
+    }
+    console.log(`\x1b[36m\ninsideArea :`);
+    for (let i = 0; i < area.getInsideArea().length; i++) {
+        console.log(`Index ${i} : ${area.getInsideArea()[i]}`);
+    }
+    console.log(`\x1b[0m`);
 }
+
+// console.log(`\x1b[32m===============`)
+// for (let i = 0; i < area.getArea().length; i++) {
+//     console.log(`Index ${i} : ${this.getArea()[i].toString()} / id = ${this.getArea()[i].getID()}`);
+// }
+// console.log(`===============\x1b[0m`)
