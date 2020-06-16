@@ -183,6 +183,9 @@ class Area {
      * @returns Boolean true/false 
      */
     addPoint(_point) {
+        /**
+         * @todo : A FAIRE
+         */
         if (!(_point instanceof Point))
             return (false);
         if (this.#area.length >= this.tabSize)
@@ -233,7 +236,10 @@ class Area {
     }
 
     /**
-     * Cette fonction bouge un point vers la cellule disponible la plus proche de l'origine
+     * Cette fonction bouge un point existant vers la cellule disponible la plus proche de l'origine
+     * Update les tableaux en meme temps
+     * Si bouger un point libere une case de maniere a "creer un trou", operation impossible.
+     * Bouger l'origine est impossible.
      * @param Point _point
      * @returns boolean true/false (true si tout s'est bien passe)
      */
@@ -242,8 +248,18 @@ class Area {
             return (false);
         if (this.#freeCellTab.length === 0)
             return (false);
+        if (this.#area.length === this.#areaSize)
+            return (false);
+        let id = _point.getID()
+        if ((id >= 0) && (id < this.#freeCellTab[0].getID()))
+            return (false);
+        /**
+         * Comme on va reassigner le point, on doit envoyer un duplicate en parametre 
+         * pour travaille sur les valeurs du tableau mais pas sur la reference du point
+         */
+        this.updateArea(_point.duplicate());
         _point.copy(this.#freeCellTab[0]);
-        this.updateFreeCellTab(_point);
+        this.updateArea(_point);
         return (true);
     }
 
@@ -260,7 +276,6 @@ class Area {
         if ((_point.getX() === 0) && (_point.getY() === 0))
             return (false);
         let index = this.#area.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
-        console.log(`INDEX = ${index}`);
         if (index === -1) {
             if (this.#area.length === this.#areaSize)
                 return (false);
@@ -270,7 +285,6 @@ class Area {
         else
             this.#area.splice(index, 1);
         if (this.coordinatesInGameArea(_point)) {
-            console.log(`\x1b[42mTEST 3\x1b[0m`);
             this.updateInsideArea(_point);
             this.updateFreeCellTab(_point);
         }

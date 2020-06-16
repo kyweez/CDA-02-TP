@@ -290,6 +290,92 @@ class Test {
             console.log(`\x1b[0m`);
         }
     }
+
+    testClassArea_moveToFirstFreeCell(){
+        console.log(`\x1b[31m\n##########################################\x1b[0m`);
+        console.log(`\x1b[31m####### CREATION D'UNE ZONE DE JEU #######\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36mlet area = new Area(3, 2);\x1b[0m`);
+        let area = new Area(3, 2);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m############ AJOUT DE 3 POINTS ###########\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`Un point a cote de l'origine :`);
+        console.log(`\x1b[36mlet point_1 = new Point(1,0);\x1b[0m`);
+        console.log(`\x1b[36mpoint_1.setID(1);\x1b[0m`);
+        console.log(`\x1b[36marea.updateArea(point_1);\x1b[0m`);
+        let point_1 = new Point(1,0);
+        point_1.setID(1);
+        area.updateArea(point_1);
+        console.log(`\nUn point en dehors de l'aire :`);
+        console.log(`\x1b[36mlet point_2 = new Point(4,5);\x1b[0m`);
+        console.log(`\x1b[36mpoint_2.setID(-9);\x1b[0m`);
+        console.log(`\x1b[36marea.updateArea(point_2);\x1b[0m`);
+        let point_2 = new Point(4,5);
+        point_2.setID(-9);
+        area.updateArea(point_2);
+        console.log(`\nUn point dans la zone de jeu :`);
+        console.log(`\x1b[36mlet point_3 = new Point(1,1);\x1b[0m`);
+        console.log(`\x1b[36mpoint_3.setID(4);\x1b[0m`);
+        console.log(`\x1b[36marea.updateArea(point_3);\x1b[0m`);
+        let point_3 = new Point(1,1);
+        point_3.setID(4);
+        area.updateArea(point_3);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m########## MOVETOFIRSTFREECELL 1 #########\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`Deplacement du point exterieur (point_2) :`);
+        console.log(`\x1b[36marea.moveToFirstFreeCell(point_2);\x1b[0m`);
+        area.moveToFirstFreeCell(point_2);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m########## MOVETOFIRSTFREECELL 2 #########\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`Deplacement du point d'origine (0,0) : // IMPOSSIBLE NORMALEMENT`);
+        console.log(`\x1b[36marea.moveToFirstFreeCell(area.getArea()[0]);\x1b[0m`);
+        area.moveToFirstFreeCell(area.getArea()[0]);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m########## MOVETOFIRSTFREECELL 3 #########\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`Deplacement du point (0,1) pour creer un trou : // IMPOSSIBLE NORMALEMENT`);
+        console.log(`\x1b[36marea.moveToFirstFreeCell(point_2);\x1b[0m`);
+        console.log(`Valeur de point_2 : ${point_2.toString()} et id = ${point_2.getID()}`);
+        area.moveToFirstFreeCell(point_2);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m########## MOVETOFIRSTFREECELL 4 #########\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`Deplacement du point (1,1) : // UPDATE TOUS LES TABLEAUX`);
+        console.log(`\x1b[36marea.moveToFirstFreeCell(point_3);\x1b[0m`);
+        console.log(`Valeur de point_3 : ${point_3.toString()} et id = ${point_3.getID()}`);
+        area.moveToFirstFreeCell(point_3);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+
+        function print() {
+            console.log(`\x1b[35m\narea :\x1b[32m`);
+            for (let i = 0; i < area.getArea().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getArea()[i].toString()} / id = ${area.getArea()[i].getID()}`);
+            }
+            console.log(`\x1b[35m\nfreeCellTab :\x1b[32m`);
+            for (let i = 0; i < area.getFreeCellTab().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getFreeCellTab()[i].toString()} / id = ${area.getFreeCellTab()[i].getID()}`);
+            }
+            console.log(`\x1b[35m\ninsideArea :\x1b[32m`);
+            for (let i = 0; i < area.getInsideArea().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getInsideArea()[i]}`);
+            }
+            console.log(`\x1b[0m`);
+        }
+    }
 }
 
 module.exports = Test;
