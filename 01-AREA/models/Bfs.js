@@ -56,12 +56,12 @@ class Bfs {
     /**
      * Initialise un double tableau de boolean.
      * Ce tableau possede Y lignes de X colonnes avec Y = _area.y et X = _area.x
-     * @param Area _area 
+     * @param Area _area
+     * @returns boolean true/false (true si tout s'est bien passe)
      */
     setVisited(_area) {
-        /**
-         * @todo : Commment gerer le controle de _area sans avoir des types de retours differents ?
-         */
+        if (!(_area instanceof Area))
+            return (false);
         this.#visited = (() => {
             let i, j, tab1D;
             let tab2D = [];
@@ -76,6 +76,7 @@ class Bfs {
             }
             return (tab2D);
         })();
+        return (true);
     }
 
     //####################################################################################//
@@ -85,7 +86,7 @@ class Bfs {
     /**
      * Cette fonction ajoute un element a la fin de la queue. (fonctionnement en FIFO)
      * @param Point _element (normalement une instance de Point)
-     * @returns boolean true/false si 
+     * @returns boolean true/false si tous s'est bien passe
      */
     insertInQueue(_element) {
         if (!(_element instanceof Point))
