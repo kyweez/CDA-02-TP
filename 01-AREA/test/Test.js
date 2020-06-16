@@ -206,6 +206,90 @@ class Test {
         }
     }
 
+    testClassArea_UpdateArea(){
+        console.log(`\x1b[31m\n##########################################\x1b[0m`);
+        console.log(`\x1b[31m####### CREATION D'UNE ZONE DE JEU #######\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36mlet area = new Area(2, 2);\x1b[0m`);
+        let area = new Area(2, 2);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m############ AJOUT D'UN POINT ############\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36mlet point = new Point(1,0);\x1b[0m`);
+        console.log(`\x1b[36mpoint.setID(1);\x1b[0m`);
+        console.log(`\x1b[36marea.updateArea(point);\x1b[0m`);
+        let point = new Point(1,0);
+        point.setID(1);
+        area.updateArea(point);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m## AJOUT D'UN POINT(0,0) / PAS POSSIBLE ##\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36mlet point2 = new Point(0,0);\x1b[0m`);
+        console.log(`\x1b[36mpoint2.setID(0);\x1b[0m`);
+        console.log(`\x1b[36marea.updateArea(point2);\x1b[0m`);
+        let point2 = new Point(0,0);
+        point2.setID(0);
+        area.updateArea(point2);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m## AJOUT D'UN POINT(-1,0) POSSIBLE MAIS ##\x1b[0m`);
+        console.log(`\x1b[31m##    PAS UPDATE DES TABLEAUX ANNEXES   ##\x1b[0m`);
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[36mlet point3 = new Point(-1,0);\x1b[0m`);
+        console.log(`\x1b[36mpoint3.setID(-1);\x1b[0m`);
+        console.log(`\x1b[36marea.updateArea(point3);\x1b[0m`);
+        let point3 = new Point(-1,0);
+        point3.setID(-1);
+        area.updateArea(point3);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m## SUPPRESSION POINT(-1,0) POSSIBLE MAIS #\x1b[0m`);
+        console.log(`\x1b[31m##    PAS UPDATE DES TABLEAUX ANNEXES    #\x1b[0m`);
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[36mlet point4 = new Point(-1,0);\x1b[0m`);
+        console.log(`\x1b[36mpoint4.setID(-1);\x1b[0m`);
+        console.log(`\x1b[36marea.updateArea(point4);\x1b[0m`);
+        let point4 = new Point(-1,0);
+        point4.setID(-1);
+        area.updateArea(point4);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m## SUPPRESSION POINT(1,0) POSSIBLE MAIS ##\x1b[0m`);
+        console.log(`\x1b[31m##   AVEC UPDATE DES TABLEAUX ANNEXES   ##\x1b[0m`);
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[36mlet point5 = new Point(1,0);\x1b[0m`);
+        console.log(`\x1b[36mpoint5.setID(1);\x1b[0m`);
+        console.log(`\x1b[36marea.updateArea(point5);\x1b[0m`);
+        let point5 = new Point(1,0);
+        point5.setID(1);
+        area.updateArea(point5);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+
+
+        function print() {
+            console.log(`\x1b[35m\narea :\x1b[32m`);
+            for (let i = 0; i < area.getArea().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getArea()[i].toString()} / id = ${area.getArea()[i].getID()}`);
+            }
+            console.log(`\x1b[35m\nfreeCellTab :\x1b[32m`);
+            for (let i = 0; i < area.getFreeCellTab().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getFreeCellTab()[i].toString()} / id = ${area.getFreeCellTab()[i].getID()}`);
+            }
+            console.log(`\x1b[35m\ninsideArea :\x1b[32m`);
+            for (let i = 0; i < area.getInsideArea().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getInsideArea()[i]}`);
+            }
+            console.log(`\x1b[0m`);
+        }
+    }
 }
 
 module.exports = Test;

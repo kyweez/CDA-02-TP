@@ -203,6 +203,11 @@ class Area {
         return true;
     }
 
+    /**
+     * Cette fonction verifie si les coordonnees du point passe en parametre font partie de la zone de jeu
+     * @param Point _point
+     * @returns boolean true/false (true si les coordonnees du point font partie de la zone de jeu)
+     */
     coordinatesInGameArea(_point) {
         if (!(_point instanceof Point))
             return (false);
@@ -217,7 +222,7 @@ class Area {
      * Cette fonction verifie si le point passe en argument est une deja occupee
      * Si la cellule est vide retourne false, sinon retourne true
      * @param Point _point
-     * @returns boolean true/false
+     * @returns boolean true/false (true si la cellule est deja occupee)
      */
     isBusyCell(_point) {
         if (!(_point instanceof Point))
@@ -227,9 +232,49 @@ class Area {
         return (true);
     }
 
+    /**
+     * Cette fonction bouge un point vers la cellule disponible la plus proche de l'origine
+     * @param Point _point
+     * @returns boolean true/false (true si tout s'est bien passe)
+     */
     moveToFirstFreeCell(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if (this.#freeCellTab.length === 0)
+            return (false);
         _point.copy(this.#freeCellTab[0]);
         this.updateFreeCellTab(_point);
+        return (true);
+    }
+
+    /**
+     * Cette fonction prend un point en argument et met a jour le tableau Area
+     * Si ce point existe, il le supprime, sinon il l'ajoute
+     * Si ce point se situe dans la zone de jeu, la fonction met a jour les tableaux annexes
+     * @param Point _point
+     * @returns boolean true/false (true si tout s'est bien passe)
+     */
+    updateArea(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if ((_point.getX() === 0) && (_point.getY() === 0))
+            return (false);
+        let index = this.#area.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
+        console.log(`INDEX = ${index}`);
+        if (index === -1) {
+            if (this.#area.length === this.#areaSize)
+                return (false);
+            this.#area.push(_point);
+            this.#area.sort((point1, point2) => point1.getID() - point2.getID());
+        }
+        else
+            this.#area.splice(index, 1);
+        if (this.coordinatesInGameArea(_point)) {
+            console.log(`\x1b[42mTEST 3\x1b[0m`);
+            this.updateInsideArea(_point);
+            this.updateFreeCellTab(_point);
+        }
+        return (true);
     }
 
     /**
@@ -255,7 +300,7 @@ class Area {
     }
 
     /**
-     * Cette fonction recoit un poin en argumen et update insideArea. (inverse le boolean de l'index correspondant a l'ID du point)
+     * Cette fonction recoit un point en argumen et update insideArea. (inverse le boolean de l'index correspondant a l'ID du point)
      * @param Point _point 
      */
     updateInsideArea(_point) {
