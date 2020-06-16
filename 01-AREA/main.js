@@ -4,5 +4,6 @@ const TEST = new Test();
 
 // TEST.testClassPoint();
 // TEST.testClassArea_Creation();
-TEST.testClassArea_UpdateInsideArea();
+// TEST.testClassArea_UpdateInsideArea();
+TEST.testClassArea_UpdateFreeCellTab();
 

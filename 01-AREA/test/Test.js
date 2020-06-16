@@ -141,6 +141,71 @@ class Test {
         }
     }
 
+    testClassArea_UpdateFreeCellTab(){
+        console.log(`\x1b[31m\n##########################################\x1b[0m`);
+        console.log(`\x1b[31m####### CREATION D'UNE ZONE DE JEU #######\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36mlet area = new Area(2, 2);\x1b[0m`);
+        let area = new Area(2, 2);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\n\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m############ AJOUT D'UN POINT ############\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36mlet point = new Point(1,0);\x1b[0m`);
+        console.log(`\x1b[36mpoint.setID(1);\x1b[0m`);
+        console.log(`\x1b[36marea.getArea()[1] = point;\x1b[0m`);
+        let point = new Point(1,0);
+        point.setID(1);
+        area.getArea()[1] = point;
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\n\x1b[0m`);
+        print();
+        console.log(`\x1b[31mfreeCellTab toujours pas update !!\n`);
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m#### UPDATE FREECELLTAB (SUPPRESSION) ####\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36marea.updateFreeCellTab(point);\x1b[0m`);
+        area.updateFreeCellTab(point);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\n\x1b[0m`);
+        print();
+        console.log(`\x1b[32mfreeCellTab bien update !!\n`);
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m##### NEW UPDATE FREECELLTAB  (AJOUT) ####\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36marea.updateFreeCellTab(point);\x1b[0m`);
+        area.updateFreeCellTab(point);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\n\x1b[0m`);
+        print();
+        console.log(`\x1b[32mfreeCellTab bien update !!\n`);
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m########## TEST AVEC POINT(0, 0) #########\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36marea.updateFreeCellTab(new Point(0,0));\x1b[0m`);
+        area.updateFreeCellTab(new Point(0,0));
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\n\x1b[0m`);
+        print();
+        console.log(`\x1b[32mfreeCellTab a bien PAS update !!\n`);
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m######### TEST AVEC POINT(-1, 1) #########\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36marea.updateFreeCellTab(new Point(-1,1));\x1b[0m`);
+        area.updateFreeCellTab(new Point(-1,1));
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\n\x1b[0m`);
+        print();
+        console.log(`\x1b[32mfreeCellTab a bien PAS update !!\x1b[0m\n`);
+        function print() {
+            console.log(`\x1b[35m\narea :\x1b[32m`);
+            for (let i = 0; i < area.getArea().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getArea()[i].toString()} / id = ${area.getArea()[i].getID()}`);
+            }
+            console.log(`\x1b[35m\nfreeCellTab :\x1b[32m`);
+            for (let i = 0; i < area.getFreeCellTab().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getFreeCellTab()[i].toString()} / id = ${area.getFreeCellTab()[i].getID()}`);
+            }
+            console.log(`\x1b[0m`);
+        }
+    }
+
 }
 
 module.exports = Test;

@@ -243,7 +243,7 @@ class Area {
             return (false);
         let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
         if (index === -1) {
-            if (!this.coordinatesInGameArea(_point))
+            if ((!this.coordinatesInGameArea(_point)) || ((_point.getX() === 0) && (_point.getY() === 0)))
                 return (false);
             this.#freeCellTab.push(_point);
             this.#freeCellTab.sort((point1, point2) => point1.getID() - point2.getID());
@@ -254,16 +254,25 @@ class Area {
         return (true);
     }
 
+    /**
+     * Cette fonction recoit un poin en argumen et update insideArea. (inverse le boolean de l'index correspondant a l'ID du point)
+     * @param Point _point 
+     */
     updateInsideArea(_point) {
         if (!(_point instanceof Point))
             return (false);
         if (_point === this.#area[0])
             return (false);
+        if (!this.coordinatesInGameArea(_point))
+            return (false);
         let index = _point.getID();
+        if ((index <= 0) || (index >= this.#areaSize))
+            return (false);
         if (this.#insideArea[index] === false)
             this.#insideArea[index] = (true);
         else
             this.#insideArea[index] = (false);
+        return (true);
     }
 
 }
