@@ -207,7 +207,7 @@ class Area {
             this.updateFreeCellTab(_point);
             this.#insideArea[_point.getID()] = (true);
         }
-        else if (this.isInside(_point)) {
+        else if (this.canBeInside(_point)) {
             _point.setID(this.realID(_point));
             this.updateFreeCellTab(_point);
             this.#insideArea[_point.getID()] = (true);
@@ -240,7 +240,7 @@ class Area {
             return (false);
         let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
         if (index === -1) {
-            if (!this.isInside(_point))
+            if (!this.canBeInside(_point))
                 return (false);
             this.#freeCellTab.push(_point);
             this.#freeCellTab.sort((point1, point2) => point1.getID() - point2.getID());
@@ -252,11 +252,11 @@ class Area {
     }
 
     /**
-     * Cette fonction verifie en fonction de ses coordonnees si le point est dans la zone de jeu
+     * Cette fonction verifie en fonction de ses coordonnees si le point peut se situer dans la zone de jeu
      * @param Point _point
      * @returns boolean true/false
      */
-    isInside(_point) {
+    canBeInside(_point) {
         if (_point.getX() < 0 || _point.getY() < 0)
             return (false);
         if (_point.getX() >= this.#width || _point.getY() >= this.#height)
@@ -311,11 +311,11 @@ class Area {
         if (_point === this.#area[0])
             return (false);
         let temp = new Point(_x, _y);
-        if (this.isInside(_point) && this.isInside(temp))
+        if (this.canBeInside(_point) && this.canBeInside(temp))
             return (this.moveInsideToInside(_point, temp));
-        else if (this.isInside(_point) && !this.isInside(temp))
+        else if (this.canBeInside(_point) && !this.canBeInside(temp))
             return (this.moveInsideToOutside(_point, temp));
-        else if (!this.isInside(_point) && this.isInside(temp))
+        else if (!this.canBeInside(_point) && this.canBeInside(temp))
             return (this.moveOutsideToInside(_point, temp));
         else
             return (this.moveOutsideToOuside(_point, temp));
@@ -324,25 +324,29 @@ class Area {
     moveInsideToInside(_point, _temp) {
         if (!(_point instanceof Point) || !(_point instanceof Point))
             return (false);
-        _temp.setID(this.realID(_temp));
-        this.updateFreeCellTab(_point);
-        this.updateInsideArea(_point);
-        this.updateFreeCellTab(_temp);
-        this.updateInsideArea(_temp);
-        // let id = _point.getID();
+        if (this.isFreeCell(_temp)) {
+            _temp.setID(this.realID(_temp));
+            this.updateFreeCellTab(_point);
+            this.updateInsideArea(_point);
+            this.updateFreeCellTab(_temp);
+            this.updateInsideArea(_temp);
+            _point.copy(_temp);
+            return (true);
+        }
+        else{
 
-        // this.#area.splice((index + 1), 1); //+1 car on commence l'indexation apres Origine
+        }
 
-        // this.#freeCellTab.splice(index, 0, _point.duplicate());
-        // _temp.setID(this.realID(_temp));
-        // _point.copy(_temp);
-        // let newIndex = _point.getID();
-        // this.#area.splice((newIndex + 1), 0, _point);
-
-        // this.updateFreeCellTab(_point);
-        return (true);
     }
 
+    moveToFirstFreeCell(_point){
+        if (!(_point instanceof Point))
+        return (false);
+        _point.copy(this.#freeCellTab[0]);
+        this.updateFreeCellTab(_point);
+        this.#insideArea[_point.getID()] = (true);
+
+    }
 
 }
 
@@ -361,6 +365,16 @@ area.movePoint(point1, 1, 1);
 console.log(`Affichage apres move : `);
 console.log(`----------------------`);
 print();
+let point2 = new Point(1,1);
+area.addPoint(point2);
+console.log(`Affichage apres add : `);
+console.log(`---------------------`);
+print();
+area.movePoint(point2, 0, 1);
+console.log(`Affichage apres move : `);
+console.log(`----------------------`);
+print();
+
 
 
 function print() {
