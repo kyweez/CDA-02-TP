@@ -306,7 +306,41 @@ class Test {
         area.addPoint(new Point(0,0));
         console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
         print();
-
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m#  AJOUT DE 1 POINT DANS LA ZONE DE JEU  #\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36marea.addPoint(new Point(1,1));\x1b[0m`);
+        area.addPoint(new Point(1,1));
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m#  AJOUT DE 1 POINT HORS LA ZONE DE JEU  #\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36marea.addPoint(new Point(2,2));\x1b[0m`);
+        area.addPoint(new Point(2,2));
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m#    POINT SUPPLEMENTAIRE IMPOSSIBLE  1  #\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36marea.addPoint(new Point(0,1));\x1b[0m`);
+        area.addPoint(new Point(0,1));
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m#    POINT SUPPLEMENTAIRE IMPOSSIBLE  2  #\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36marea.addPoint(new Point(0,0));\x1b[0m`);
+        area.addPoint(new Point(0,0));
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m##########################################\x1b[0m`);
+        console.log(`\x1b[31m#    POINT SUPPLEMENTAIRE IMPOSSIBLE  3  #\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36marea.addPoint(new Point(4,4));\x1b[0m`);
+        area.addPoint(new Point(0,1));
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
         function print() {
             console.log(`\x1b[35m\narea :\x1b[32m`);
             for (let i = 0; i < area.getArea().length; i++) {
