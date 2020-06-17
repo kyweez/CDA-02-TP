@@ -22,9 +22,9 @@ class Bfs {
      * BFS = Breadth First Search. Documentation dans le dossier Doc.
      * @param Area _area 
      */
-    constructor(_area) {
+    constructor(_width, _height) {
         this.setQueue();
-        this.setVisited(_area);
+        this.setVisited(_width, _height);
         this.insertInQueue(new Point(0, 0));
         this.#visited[0][0] = (true);
     }
@@ -60,17 +60,15 @@ class Bfs {
      * @param Area _area
      * @returns boolean true/false (true si tout s'est bien passe)
      */
-    setVisited(_area) {
-        // if (!(_area instanceof Area))
-        //     return (false);
+    setVisited(_width, _height) {
         this.#visited = (() => {
             let i, j, tab1D;
             let tab2D = [];
-            for (i = 0; i < _area.getHeight(); i++) {
+            for (i = 0; i < _height; i++) {
                 tab2D.push((() => {
                     j = 0;
                     tab1D = [];
-                    for (j; j < _area.getWidth(); j++)
+                    for (j; j < _width; j++)
                         tab1D.push(false);
                     return (tab1D);
                 })());

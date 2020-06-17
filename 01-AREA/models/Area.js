@@ -40,7 +40,7 @@ class Area {
         this.setHeight(_height);
         this.setArea(new Array());
         this.setAreaSize();
-        this.setFreeCellTab();
+        this.setFreeCellTab(_width, _height);
         this.setInsideArea();
     }
 
@@ -128,9 +128,9 @@ class Area {
      * Le tableau est trie dans le la case la plus proche de l'origine vers la case la plus eloignée.
      * @param Point[] _table
      */
-    setFreeCellTab() {
+    setFreeCellTab(_width, _height) {
         let freeCells = [];
-        let bfs = new Bfs(this);
+        let bfs = new Bfs(_width, _height);
         let node, finalNode;
         let id = 1;
         while (bfs.getQueue().length > 0) {
@@ -238,6 +238,35 @@ class Area {
     }
 
     /**
+     * Déplace un point existant dans la zone vers de nouvelles coordonnées
+     * Les nouvelles coordonnées peuvent se trouver hors limites
+     * @returns Boolean true en cas de succès, false en cas d'échec
+     */
+    movePoint(_point, _x, _y) {
+        if (!(_point instanceof Point))
+            return (false);
+        if (_point.getX() === 0 && _point.getY() === 0)
+            return (false);
+        if (_x === null || _y === null)
+            return (false);
+        if (!(isFinite(_x)) || !(isFinite(_y)))
+            return (false);
+        if (!this.isBusyCell(_point))
+            return (false);
+        let tempPoint = new Point(_x, _y);
+        if (this.isBusyCell(tempPoint))
+            this.moveToFirstFreeCell(_point);
+        else{
+            this.updateArea(_point.duplicate())
+            _point.copy(tempPoint);
+            this.setNewPointId(_point);
+            this.updateArea(_point);
+        }
+        return (true);
+    }
+
+
+    /**
      * Cette fonction bouge un point existant vers la cellule disponible la plus proche de l'origine
      * Update les tableaux en meme temps
      * Si bouger un point libere une case de maniere a "creer un trou", operation impossible.
@@ -249,8 +278,6 @@ class Area {
         if (!(_point instanceof Point))
             return (false);
         if (this.#freeCellTab.length === 0)
-            return (false);
-        if (this.#area.length === this.#areaSize)
             return (false);
         let id = _point.getID()
         if ((id >= 0) && (id < this.#freeCellTab[0].getID()))
