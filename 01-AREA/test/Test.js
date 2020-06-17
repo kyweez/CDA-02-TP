@@ -570,7 +570,62 @@ class Test {
             }
             console.log(`\x1b[0m`);
         }
+    }
 
+    testClassArea_needAllInside() {
+        console.log(`\x1b[31m\n##########################################\x1b[0m`);
+        console.log(`\x1b[31m####### CREATION D'UNE ZONE DE JEU #######\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`\x1b[36mlet area = new Area(3, 3);\x1b[0m`);
+        let area = new Area(3, 3);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m\n##########################################\x1b[0m`);
+        console.log(`\x1b[31m####### AJOUT DE 5 POINTS  OUTSIDE #######\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        area.addPoint(new Point(-51,235));
+        area.addPoint(new Point(61,532));
+        area.addPoint(new Point(-72,425));
+        area.addPoint(new Point(8,5242));
+        area.addPoint(new Point(9,-53));
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m\n##########################################\x1b[0m`);
+        console.log(`\x1b[31m####### TEST FONCTION NEEDALLINSIDE ######\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`${area.needAllInside()} points ont ete remis a l'interieur`);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m\n##########################################\x1b[0m`);
+        console.log(`\x1b[31m###### AJOUT DE 3 POINTS  IN & OUT #######\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        area.addPoint(new Point(-51,235));
+        area.addPoint(new Point(61,532));
+        area.addPoint(new Point(2,2));
+         console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+        console.log(`\x1b[31m\n##########################################\x1b[0m`);
+        console.log(`\x1b[31m####### TEST FONCTION NEEDALLINSIDE ######\x1b[0m`);
+        console.log(`\x1b[31m##########################################\n\x1b[0m`);
+        console.log(`${area.needAllInside()} points ont ete remis a l'interieur`);
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        print();
+   
+        function print() {
+            console.log(`\x1b[35m\narea :\x1b[32m`);
+            for (let i = 0; i < area.getArea().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getArea()[i].toString()} / id = ${area.getArea()[i].getID()}`);
+            }
+            console.log(`\x1b[35m\nfreeCellTab :\x1b[32m`);
+            for (let i = 0; i < area.getFreeCellTab().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getFreeCellTab()[i].toString()} / id = ${area.getFreeCellTab()[i].getID()}`);
+            }
+            console.log(`\x1b[35m\ninsideArea :\x1b[32m`);
+            for (let i = 0; i < area.getInsideArea().length; i++) {
+                console.log(`\x1b[0mIndex ${i} : \x1b[32m${area.getInsideArea()[i]}`);
+            }
+            console.log(`\x1b[0m`);
+        }
     }
 }
 

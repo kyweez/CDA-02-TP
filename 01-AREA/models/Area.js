@@ -240,6 +240,8 @@ class Area {
     /**
      * Déplace un point existant dans la zone vers de nouvelles coordonnées
      * Les nouvelles coordonnées peuvent se trouver hors limites
+     * Si un point doit etre bouge sur une case pleine, envoie sur la case libre la plus proche de origine
+     * SAUF SI ce deplacement cree un "trou"
      * @returns Boolean true en cas de succès, false en cas d'échec
      */
     movePoint(_point, _x, _y) {
@@ -256,7 +258,7 @@ class Area {
         let tempPoint = new Point(_x, _y);
         if (this.isBusyCell(tempPoint))
             this.moveToFirstFreeCell(_point);
-        else{
+        else {
             this.updateArea(_point.duplicate())
             _point.copy(tempPoint);
             this.setNewPointId(_point);
@@ -290,6 +292,21 @@ class Area {
         _point.copy(this.#freeCellTab[0]);
         this.updateArea(_point);
         return (true);
+    }
+
+    /**
+     * Vérifie la position de chaque "Point" existant dans la zone
+     * Chaque Point hors des limites est automatiquement déplacé dans les limites vers la position libre la plus proche du Point d'origine (0,0)
+     * Les points les plus eloignes sont rappatries en premiers
+     * @returns int le nombre de points déplacés
+     */
+    needAllInside() {
+        let nb = parseInt(0);
+        while (this.#area[0].getID() < 0) {
+            this.moveToFirstFreeCell(this.#area[0]);
+            nb++
+        }
+        return nb;
     }
 
     /**
