@@ -1,4 +1,5 @@
 const Point = require(`./Point.js`);
+const Area = require(`../models/Area.js`);
 
 class Bfs {
 
@@ -60,6 +61,7 @@ class Bfs {
      * @returns boolean true/false (true si tout s'est bien passe)
      */
     setVisited(_area) {
+        console.log(_area instanceof Area);
         if (!(_area instanceof Area))
             return (false);
         this.#visited = (() => {

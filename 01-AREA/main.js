@@ -8,4 +8,5 @@ const TEST = new Test();
 // TEST.testClassArea_UpdateFreeCellTab();
 // TEST.testClassArea_UpdateArea();
 TEST.testClassArea_moveToFirstFreeCell();
+// TEST.testClassArea_addPoint();
 

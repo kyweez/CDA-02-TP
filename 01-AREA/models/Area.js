@@ -183,27 +183,29 @@ class Area {
      * @returns Boolean true/false 
      */
     addPoint(_point) {
-        /**
-         * @todo : A FAIRE
-         */
         if (!(_point instanceof Point))
             return (false);
         if (this.#area.length >= this.tabSize)
             return (false);
-        if (this.isBusyCell(_point)) {
-            _point.copy(this.#freeCellTab[0]);
-            this.updateFreeCellTab(_point);
-            this.#insideArea[_point.getID()] = (true);
+        if (this.isBusyCell(_point))
+            this.addPointToFirstFreeCell(_point);
+        else {
+            this.setNewPointId(_point);
+            this.updateArea(_point);
         }
-        else if (this.canBeInside(_point)) {
-            _point.setID(this.realID(_point));
-            this.updateFreeCellTab(_point);
-            this.#insideArea[_point.getID()] = (true);
-        }
-        else
-            _point.setID(_point.distanceFromOrigin() * -1);
-        this.#area.push(_point);
         return true;
+    }
+
+    addPointToFirstFreeCell(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if (this.#freeCellTab.length === 0)
+            return (false);
+        if (this.#area.length === this.#areaSize)
+            return (false);
+        _point.copy(this.#freeCellTab[0]);
+        this.updateArea(_point);
+        return (true);
     }
 
     /**
@@ -260,6 +262,25 @@ class Area {
         this.updateArea(_point.duplicate());
         _point.copy(this.#freeCellTab[0]);
         this.updateArea(_point);
+        return (true);
+    }
+
+    /**
+     * Cette fonction met a jour le nouvel identifiant a attribuer lors de l'ajout d'un point
+     * @param Point _point
+     * @returns int newID
+     */
+    setNewPointId(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if (this.isBusyCell(_point))
+            return (false);
+        if (this.coordinatesInGameArea(_point)) {
+            let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
+            _point.setID(this.#freeCellTab[index].getID());
+        }
+        else
+            _point.setID((_point.distanceFromOrigin() * -1));
         return (true);
     }
 
