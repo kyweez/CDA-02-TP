@@ -131,11 +131,11 @@ class Area {
     setFreeCellTab() {
         let freeCells = [];
         let bfs = new Bfs(this);
-        let node;
-        let id = 0;
+        let node, finalNode;
+        let id = 1;
         while (bfs.getQueue().length > 0) {
             node = bfs.removeFromQueue();
-            if (this.isFreeCell(node)) {
+            if (!this.isBusyCell(node)) {
                 node.setID(id++);
                 freeCells.push(node);
             }
@@ -150,11 +150,10 @@ class Area {
                 }
             }
         }
-        let finalNode = node.duplicate();
+        finalNode = node.duplicate();
         finalNode.setX(finalNode.getX() + 1);
         finalNode.setID(finalNode.getID() + 1);
-        if (this.isFreeCell(finalNode))
-            freeCells.push(finalNode);
+        freeCells.push(finalNode);// A PROTEGER SI ON SE SERT DE LA FONCTION EN DEHORS DU CONSTRUCTEUR (CF PREMIERS COMMITS)
         this.#freeCellTab = freeCells;
     }
 
@@ -163,31 +162,17 @@ class Area {
      * @param Point[] _table
      */
     setInsideArea() {
-        this.#insideArea = new Array(this.#freeCellTab.length);
+        this.#insideArea = new Array(this.#areaSize);
 
         let i;
         for (i = 0; i < this.#insideArea.length; i++)
             this.#insideArea[i] = (false);
+        this.#insideArea[0] = (true);
     }
 
     //####################################################################################//
     //##################################### FUNCTIONS ####################################//
     //####################################################################################//
-
-
-    /**
-     * Cette fonction verifie si le point passe en argument est une cellule vide de l'aire
-     * Si la cellule est vide retourne true, sinon retourne false
-     * @param Point _point
-     * @returns boolean true/false
-     */
-    isFreeCell(_point) {
-        if (!(_point instanceof Point))
-            return (false);
-        if ((this.#area.find(test => test.getX() === _point.getX() && test.getY() === _point.getY())) !== undefined)
-            return (false);
-        return (true);
-    }
 
     /**
      * Ajoute un point dans l'aire
@@ -202,35 +187,133 @@ class Area {
             return (false);
         if (this.#area.length >= this.tabSize)
             return (false);
-        if (!this.isFreeCell(_point)) {
-            _point.copy(this.#freeCellTab[0]);
-            this.updateFreeCellTab(_point);
-            this.#insideArea[_point.getID()] = (true);
+        if (this.isBusyCell(_point))
+            this.addPointToFirstFreeCell(_point);
+        else {
+            this.setNewPointId(_point);
+            this.updateArea(_point);
         }
-        else if (this.canBeInside(_point)) {
-            _point.setID(this.realID(_point));
-            this.updateFreeCellTab(_point);
-            this.#insideArea[_point.getID()] = (true);
-        }
-        else
-            _point.setID(_point.distanceFromOrigin() * -1);
-        this.#area.push(_point);
         return true;
     }
 
-    updateInsideArea(_point) {
+    addPointToFirstFreeCell(_point) {
         if (!(_point instanceof Point))
             return (false);
-        if (_point === this.#area[0])
+        if (this.#freeCellTab.length === 0)
             return (false);
-        if (this.#insideArea[_point.getID()] === false)
-            this.#insideArea[_point.getID()] = true;
-        else
-            this.#insideArea[_point.getID()] = false;
+        if (this.#area.length === this.#areaSize)
+            return (false);
+        _point.copy(this.#freeCellTab[0]);
+        this.updateArea(_point);
+        return (true);
     }
 
     /**
-     * Cette fonction met a jour this.#freeCellTab en supprimant le point passe en parametre s'il existe 
+     * Cette fonction verifie si les coordonnees du point passe en parametre font partie de la zone de jeu
+     * @param Point _point
+     * @returns boolean true/false (true si les coordonnees du point font partie de la zone de jeu)
+     */
+    coordinatesInGameArea(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if ((_point.getX() < 0) || (_point.getY() < 0))
+            return (false);
+        if ((_point.getX() >= this.#width) || (_point.getY() >= this.#height))
+            return (false);
+        return (true);
+    }
+
+    /**
+     * Cette fonction verifie si le point passe en argument est une deja occupee
+     * Si la cellule est vide retourne false, sinon retourne true
+     * @param Point _point
+     * @returns boolean true/false (true si la cellule est deja occupee)
+     */
+    isBusyCell(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if ((this.#area.find(test => test.getX() === _point.getX() && test.getY() === _point.getY())) === undefined)
+            return (false);
+        return (true);
+    }
+
+    /**
+     * Cette fonction bouge un point existant vers la cellule disponible la plus proche de l'origine
+     * Update les tableaux en meme temps
+     * Si bouger un point libere une case de maniere a "creer un trou", operation impossible.
+     * Bouger l'origine est impossible.
+     * @param Point _point
+     * @returns boolean true/false (true si tout s'est bien passe)
+     */
+    moveToFirstFreeCell(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if (this.#freeCellTab.length === 0)
+            return (false);
+        if (this.#area.length === this.#areaSize)
+            return (false);
+        let id = _point.getID()
+        if ((id >= 0) && (id < this.#freeCellTab[0].getID()))
+            return (false);
+        /**
+         * Comme on va reassigner le point, on doit envoyer un duplicate en parametre 
+         * pour travaille sur les valeurs du tableau mais pas sur la reference du point
+         */
+        this.updateArea(_point.duplicate());
+        _point.copy(this.#freeCellTab[0]);
+        this.updateArea(_point);
+        return (true);
+    }
+
+    /**
+     * Cette fonction met a jour le nouvel identifiant a attribuer lors de l'ajout d'un point
+     * @param Point _point
+     * @returns int newID
+     */
+    setNewPointId(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if (this.isBusyCell(_point))
+            return (false);
+        if (this.coordinatesInGameArea(_point)) {
+            let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
+            _point.setID(this.#freeCellTab[index].getID());
+        }
+        else
+            _point.setID((_point.distanceFromOrigin() * -1));
+        return (true);
+    }
+
+    /**
+     * Cette fonction prend un point en argument et met a jour le tableau Area
+     * Si ce point existe, il le supprime, sinon il l'ajoute
+     * Si ce point se situe dans la zone de jeu, la fonction met a jour les tableaux annexes
+     * @param Point _point
+     * @returns boolean true/false (true si tout s'est bien passe)
+     */
+    updateArea(_point) {
+        if (!(_point instanceof Point))
+            return (false);
+        if ((_point.getX() === 0) && (_point.getY() === 0))
+            return (false);
+        let index = this.#area.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
+        if (index === -1) {
+            if (this.#area.length === this.#areaSize)
+                return (false);
+            this.#area.push(_point);
+            this.#area.sort((point1, point2) => point1.getID() - point2.getID());
+        }
+        else
+            this.#area.splice(index, 1);
+        if (this.coordinatesInGameArea(_point)) {
+            this.updateInsideArea(_point);
+            this.updateFreeCellTab(_point);
+        }
+        return (true);
+    }
+
+    /**
+     * Cette fonction met a jour this.#freeCellTab en supprimant le point passe en argument s'il existe 
      * ou en l'ajoutant s'il n'existe pas. 
      * @param Point _point
      * @returns Boolean true/false (true en cas de succes)
@@ -240,7 +323,7 @@ class Area {
             return (false);
         let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
         if (index === -1) {
-            if (!this.canBeInside(_point))
+            if ((!this.coordinatesInGameArea(_point)) || ((_point.getX() === 0) && (_point.getY() === 0)))
                 return (false);
             this.#freeCellTab.push(_point);
             this.#freeCellTab.sort((point1, point2) => point1.getID() - point2.getID());
@@ -252,152 +335,26 @@ class Area {
     }
 
     /**
-     * Cette fonction verifie en fonction de ses coordonnees si le point peut se situer dans la zone de jeu
-     * @param Point _point
-     * @returns boolean true/false
-     */
-    canBeInside(_point) {
-        if (_point.getX() < 0 || _point.getY() < 0)
-            return (false);
-        if (_point.getX() >= this.#width || _point.getY() >= this.#height)
-            return (false);
-        return (true);
-    }
-
-    /**
-     * Cette fonction verifie si le point passe en argument se situe dans la zone.
+     * Cette fonction recoit un point en argumen et update insideArea. (inverse le boolean de l'index correspondant a l'ID du point)
      * @param Point _point 
-     * @returns boolean true/false
      */
-    isInArea(_point) {
+    updateInsideArea(_point) {
         if (!(_point instanceof Point))
-            return (false);
-        let index = this.#area.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
-        if (index === -1)
-            return (false);
-        return (true);
-    }
-
-    /**
-     * Cette fonction recherche l'ID reel d'un point pour lui assigner sa place dans le tableau Area
-     * @param Point _point
-     * @returns int : NaN if failed / realID if success
-     */
-    realID(_point) {
-        if (!(_point instanceof Point))
-            return (NaN);
-        let index = this.#freeCellTab.findIndex(test => test.getX() === _point.getX() && test.getY() === _point.getY());
-        if (index === -1)
-            return (NaN);
-        return (this.#freeCellTab[index].getID());
-    }
-
-    /**
-     * Déplace un point existant dans la zone vers de nouvelles coordonnées
-     * Les nouvelles coordonnées peuvent se trouver hors limites
-     * @returns Boolean true en cas de succès, false en cas d'échec
-     */
-    movePoint(_point, _x, _y) {
-        if (this.#area.length === this.#areaSize)
-            return (false);
-        if (!(_point instanceof Point))
-            return (false);
-        if (_x === null || _y === null)
-            return (false);
-        if (!(isFinite(_x) && isFinite(_y)))
-            return (false);
-        if (!this.isInArea(_point))
             return (false);
         if (_point === this.#area[0])
             return (false);
-        let temp = new Point(_x, _y);
-        if (this.canBeInside(_point) && this.canBeInside(temp))
-            return (this.moveInsideToInside(_point, temp));
-        else if (this.canBeInside(_point) && !this.canBeInside(temp))
-            return (this.moveInsideToOutside(_point, temp));
-        else if (!this.canBeInside(_point) && this.canBeInside(temp))
-            return (this.moveOutsideToInside(_point, temp));
-        else
-            return (this.moveOutsideToOuside(_point, temp));
-    }
-
-    moveInsideToInside(_point, _temp) {
-        if (!(_point instanceof Point) || !(_point instanceof Point))
+        if (!this.coordinatesInGameArea(_point))
             return (false);
-        if (this.isFreeCell(_temp)) {
-            _temp.setID(this.realID(_temp));
-            this.updateFreeCellTab(_point);
-            this.updateInsideArea(_point);
-            this.updateFreeCellTab(_temp);
-            this.updateInsideArea(_temp);
-            _point.copy(_temp);
-            return (true);
-        }
-        else{
-
-        }
-
-    }
-
-    moveToFirstFreeCell(_point){
-        if (!(_point instanceof Point))
-        return (false);
-        _point.copy(this.#freeCellTab[0]);
-        this.updateFreeCellTab(_point);
-        this.#insideArea[_point.getID()] = (true);
-
+        let index = _point.getID();
+        if ((index <= 0) || (index >= this.#areaSize))
+            return (false);
+        if (this.#insideArea[index] === false)
+            this.#insideArea[index] = (true);
+        else
+            this.#insideArea[index] = (false);
+        return (true);
     }
 
 }
 
 module.exports = Area;
-
-let area = new Area(2, 2);
-console.log(`Affichage apres init : `);
-console.log(`----------------------`);
-print();
-let point1 = new Point(0, 1);
-area.addPoint(point1);
-console.log(`Affichage apres add : `);
-console.log(`---------------------`);
-print();
-area.movePoint(point1, 1, 1);
-console.log(`Affichage apres move : `);
-console.log(`----------------------`);
-print();
-let point2 = new Point(1,1);
-area.addPoint(point2);
-console.log(`Affichage apres add : `);
-console.log(`---------------------`);
-print();
-area.movePoint(point2, 0, 1);
-console.log(`Affichage apres move : `);
-console.log(`----------------------`);
-print();
-
-
-
-function print() {
-    console.log(`width : ${area.getWidth()}`);
-    console.log(`width : ${area.getHeight()}`);
-    console.log(`areaSize : ${area.getAreaSize()}`);
-    console.log(`\x1b[31m\narea :`);
-    for (let i = 0; i < area.getArea().length; i++) {
-        console.log(`Index ${i} : ${area.getArea()[i].toString()} / id = ${area.getArea()[i].getID()}`);
-    }
-    console.log(`\x1b[35m\nfreeCellTab :`);
-    for (let i = 0; i < area.getFreeCellTab().length; i++) {
-        console.log(`Index ${i} : ${area.getFreeCellTab()[i].toString()} / id = ${area.getFreeCellTab()[i].getID()}`);
-    }
-    console.log(`\x1b[36m\ninsideArea :`);
-    for (let i = 0; i < area.getInsideArea().length; i++) {
-        console.log(`Index ${i} : ${area.getInsideArea()[i]}`);
-    }
-    console.log(`\x1b[0m`);
-}
-
-// console.log(`\x1b[32m===============`)
-// for (let i = 0; i < area.getArea().length; i++) {
-//     console.log(`Index ${i} : ${this.getArea()[i].toString()} / id = ${this.getArea()[i].getID()}`);
-// }
-// console.log(`===============\x1b[0m`)
