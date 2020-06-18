@@ -84,7 +84,6 @@ class Area {
      */
     getInsideArea() { return (this.#insideArea); }
 
-
     /**
      * Définit une nouvelle valeur pour width
      * @param int _width nouvelle valeur pour this.#width 
@@ -266,7 +265,6 @@ class Area {
         }
         return (true);
     }
-
 
     /**
      * Cette fonction bouge un point existant vers la cellule disponible la plus proche de l'origine

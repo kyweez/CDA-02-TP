@@ -1,5 +1,4 @@
 const Point = require(`./Point.js`);
-const Area = require(`../models/Area.js`);
 
 class Bfs {
 

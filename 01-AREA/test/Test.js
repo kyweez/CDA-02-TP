@@ -583,11 +583,11 @@ class Test {
         console.log(`\x1b[31m\n##########################################\x1b[0m`);
         console.log(`\x1b[31m####### AJOUT DE 5 POINTS  OUTSIDE #######\x1b[0m`);
         console.log(`\x1b[31m##########################################\n\x1b[0m`);
-        area.addPoint(new Point(-51,235));
-        area.addPoint(new Point(61,532));
-        area.addPoint(new Point(-72,425));
-        area.addPoint(new Point(8,5242));
-        area.addPoint(new Point(9,-53));
+        area.addPoint(new Point(-51, 235));
+        area.addPoint(new Point(61, 532));
+        area.addPoint(new Point(-72, 425));
+        area.addPoint(new Point(8, 5242));
+        area.addPoint(new Point(9, -53));
         console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
         print();
         console.log(`\x1b[31m\n##########################################\x1b[0m`);
@@ -599,10 +599,10 @@ class Test {
         console.log(`\x1b[31m\n##########################################\x1b[0m`);
         console.log(`\x1b[31m###### AJOUT DE 3 POINTS  IN & OUT #######\x1b[0m`);
         console.log(`\x1b[31m##########################################\n\x1b[0m`);
-        area.addPoint(new Point(-51,235));
-        area.addPoint(new Point(61,532));
-        area.addPoint(new Point(2,2));
-         console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
+        area.addPoint(new Point(-51, 235));
+        area.addPoint(new Point(61, 532));
+        area.addPoint(new Point(2, 2));
+        console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
         print();
         console.log(`\x1b[31m\n##########################################\x1b[0m`);
         console.log(`\x1b[31m####### TEST FONCTION NEEDALLINSIDE ######\x1b[0m`);
@@ -610,7 +610,7 @@ class Test {
         console.log(`${area.needAllInside()} points ont ete remis a l'interieur`);
         console.log(`\x1b[33m\nAffichage des attributs de Area :\x1b[0m`);
         print();
-   
+
         function print() {
             console.log(`\x1b[35m\narea :\x1b[32m`);
             for (let i = 0; i < area.getArea().length; i++) {
@@ -627,6 +627,89 @@ class Test {
             console.log(`\x1b[0m`);
         }
     }
+
+    benchmark() {
+        console.log(`\n\x1b[33m########## DEBUT BENCHMARK ##########\x1b[0m\n`)
+        //Declaration area et variable pour instancier les points
+        let area = new Area(100, 100);
+        let i = 0;
+        let x = -1;
+        let y = -1;
+
+
+        console.log(`Taille totale d'area : \x1b[32m${area.getAreaSize()}\x1b[0m\n`);
+
+        console.log(`___________________________________________________`);
+        let heureDebutGenerationPoint = new Date();
+        console.log(`Debut de la generation des points : \x1b[32m${heureDebutGenerationPoint.toISOString().substring(11, 19)}\x1b[0m`);
+        while (i < 9999) {
+            if (area.getArea().length === 1)
+                console.log(`\x1b[35m\nDebut generation Tableau (dans la boucle)\x1b[0m`);
+            area.addPoint(new Point(x, y));
+            x--;
+            y--;
+            i++;
+            if (area.getArea().length === 10000)
+                console.log(`\x1b[35mFin generation Tableau (dans la boucle)\x1b[0m\n`);
+        }
+        let heureFinGenerationPoint = new Date();
+        console.log(`Fin de la generation des points   : \x1b[32m${heureFinGenerationPoint.toISOString().substring(11, 19)}\x1b[0m`);
+        console.log(`Temps de generation des points    : \x1b[32m${(heureFinGenerationPoint.getTime() - heureDebutGenerationPoint.getTime()) / 1000}\x1b[0m secondes`);
+        console.log(`___________________________________________________\n`);
+
+        let heureDebutNeedAll = new Date();
+        console.log(`Debut de needAllInside     : \x1b[32m${heureDebutNeedAll.toISOString().substring(11, 19)}\x1b[0m`);
+        let nbMovedCell = area.needAllInside();
+        let heureFinNeedAll = new Date();
+        console.log(`Fin de needAllInside       : \x1b[32m${heureFinNeedAll.toISOString().substring(11, 19)}\x1b[0m`);
+        console.log(`Temps de execution needAll : \x1b[32m${(heureFinNeedAll.getTime() - heureDebutNeedAll.getTime()) / 1000}\x1b[0m secondes`)
+        console.log(`___________________________________________________\n`);
+
+        console.log(`Points deplacés : \x1b[32m${nbMovedCell}\x1b[0m`);
+        console.log(`\n\x1b[33m########### FIN BENCHMARK ##########\x1b[0m`)
+    }
+
+    benchmarkHardcoreMode() {
+        console.log(`\n\x1b[33m########## DEBUT BENCHMARK ##########\x1b[0m\n`)
+        //Declaration area et variable pour instancier les points
+        let area = new Area(1000, 1000);
+        let i = 0;
+        let x = -1;
+        let y = -1;
+
+
+        console.log(`Taille totale d'area : \x1b[32m${area.getAreaSize()}\x1b[0m\n`);
+
+        console.log(`___________________________________________________`);
+        let heureDebutGenerationPoint = new Date();
+        console.log(`Debut de la generation des points : \x1b[32m${heureDebutGenerationPoint.toISOString().substring(11, 19)}\x1b[0m`);
+        while (i < 999999) {
+            if (area.getArea().length === 1)
+                console.log(`\x1b[35m\nDebut generation Tableau (dans la boucle)\x1b[0m`);
+            area.addPoint(new Point(x, y));
+            x--;
+            y--;
+            i++;
+            if (area.getArea().length === 1000000)
+                console.log(`\x1b[35mFin generation Tableau (dans la boucle)\x1b[0m\n`);
+        }
+        let heureFinGenerationPoint = new Date();
+        console.log(`Fin de la generation des points   : \x1b[32m${heureFinGenerationPoint.toISOString().substring(11, 19)}\x1b[0m`);
+        console.log(`Temps de generation des points    : \x1b[32m${(heureFinGenerationPoint.getTime() - heureDebutGenerationPoint.getTime()) / 1000}\x1b[0m secondes`);
+        console.log(`___________________________________________________\n`);
+
+        let heureDebutNeedAll = new Date();
+        console.log(`Debut de needAllInside     : \x1b[32m${heureDebutNeedAll.toISOString().substring(11, 19)}\x1b[0m`);
+        let nbMovedCell = area.needAllInside();
+        let heureFinNeedAll = new Date();
+        console.log(`Fin de needAllInside       : \x1b[32m${heureFinNeedAll.toISOString().substring(11, 19)}\x1b[0m`);
+        console.log(`Temps de execution needAll : \x1b[32m${(heureFinNeedAll.getTime() - heureDebutNeedAll.getTime()) / 1000}\x1b[0m secondes`)
+        console.log(`___________________________________________________\n`);
+
+        console.log(`Points deplacés : \x1b[32m${nbMovedCell}\x1b[0m`);
+        console.log(`\n\x1b[33m########### FIN BENCHMARK ##########\x1b[0m`)
+    }
+
 }
 
 module.exports = Test;

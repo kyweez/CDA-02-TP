@@ -1,4 +1,4 @@
-const Test  = require(`./test/Test.js`);
+const Test = require(`./test/Test.js`);
 
 const TEST = new Test();
 
@@ -10,6 +10,6 @@ const TEST = new Test();
 // TEST.testClassArea_moveToFirstFreeCell();
 // TEST.testClassArea_addPoint();
 // TEST.testClassArea_movePoint();
-TEST.testClassArea_needAllInside();
-
-
+// TEST.testClassArea_needAllInside();
+TEST.benchmark();
+// TEST.benchmarkHardcoreMode(); // A tester sur le Xeon de Mike

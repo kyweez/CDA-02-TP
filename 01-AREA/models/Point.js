@@ -147,6 +147,7 @@ class Point {
 
     /**
      * Retourne la distance par rapport au point d'origine (0,0)
+     * Utilisation des valeurs absolues pour gerer les valeurs negative
      * @returns int distance par rapport à la coordonnée (0,0)
      */
     distanceFromOrigin() {
